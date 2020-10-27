@@ -11,47 +11,48 @@ let newLetters=LETTERS.split('');
  */
 function start() {
   alert('Halló!')
-  let spurning1 = prompt('Hvort viltu kóða eða afkóða streng? Skrifaðu „kóða“ eða „afkóða“');
-  let coding = spurning1.toLocaleLowerCase() == 'kóða' | 'afkóða'? spurning1.toLocaleLowerCase() : codingCodeDecodeQuestion(spurning1.toLocaleLowerCase());
-  let hlidrun = codingHlidrun();
-  let string = codingString(coding, hlidrun);
-  let result = coding == 'kóða' ? encode(string, hlidrun) : decode(string, hlidrun);
+  let input = prompt('Hvort viltu kóða eða afkóða streng? Skrifaðu „kóða“ eða „afkóða“');
+  let coding = input.toLocaleLowerCase() == 'kóða' | input.toLocaleLowerCase() == 'afkóða'? input.toLocaleLowerCase() : methodNotRecognized(input.toLocaleLowerCase());
+
+  let shift = getShiftInteger();
+  let string = getString(coding, shift);
+  let result = input == 'kóða' ? encode(string, shift) : decode(string, shift);
 
 
-  console.log(result);
+  alert(`Útkoma aðgerðarinnar: ${coding}. Á strengnum „${string}“ með hliðrun = ${shift}. \n ${result}`)
 }
 
-function codingCodeDecodeQuestion(svar) {
-  let nyttSvar = prompt(`Veit ekki hvaða aðgerð „ ${svar} “ er. Reyndu aftur.`);
-  let result = nyttSvar.toLocaleLowerCase() == 'kóða' | 'afkóða' ? true : codingCodeDecodeQuestion(nyttSvar);
+function methodNotRecognized(input) {
+  let newInput = prompt(`Veit ekki hvaða aðgerð „ ${input} “ er. Reyndu aftur.`);
+  let result = newInput.toLocaleLowerCase() == 'kóða' | newInput.toLocaleLowerCase() == 'afkóða' ? true : methodNotRecognized(newInput);
   return result;
 }
 
-function codingHlidrun() {
-  let spurning2 = prompt('Hversu mikið á að hliðra streng? Gefðu upp heiltölu á bilinu [1, 31]');
-  let svar = Number.parseInt(spurning2);
-  let result = Number.isInteger(svar) & svar > 0 & svar < 32 ? true : codingHlidrunRecursive(svar);
+function getShiftInteger() {
+  let input = prompt('Hversu mikið á að hliðra streng? Gefðu upp heiltölu á bilinu [1, 31]');
+  let parsedInput = Number.parseInt(input);
+  let result = Number.isInteger(parsedInput) & parsedInput > 0 & parsedInput < 32 ? parsedInput : shiftIntegerNotRecognized(parsedInput);
   return result;
 }
 
-function codingHlidrunRecursive(svar) {
-  let nyttSvar = prompt(`${svar} er ekki heiltala á bilinu [1, 31]. Reyndu aftur`);
-  svar = Number.parseInt(nyttSvar);
-  let result = Number.isInteger(svar) & svar > 0 & svar < 32 ? true : codingHlidrunRecursive(svar);
+function shiftIntegerNotRecognized(input) {
+  let newInput = prompt(`${input} er ekki heiltala á bilinu [1, 31]. Reyndu aftur`);
+  input = Number.parseInt(newInput);
+  let result = Number.isInteger(input) & input > 0 & input < 32 ? input : shiftIntegerNotRecognized(input);
   return result;
 }
 
-function codingString(action, n) {
-  let spurning3 = prompt(`Gefðu upp strenginn sem á að ${action} með hliðrun ${n}:`);
-  let svar = !Number.isInteger(spurning3) | spurning3 != '' ? true : codingStringRecursive(action, n, spurning3);
-  return svar;
+function getString(action, n) {
+  let input = prompt(`Gefðu upp strenginn sem á að ${action} með hliðrun ${n}:`);
+  let result = !Number.isInteger(input) | input != '' ? input : stringNotRecognized(action, n, input);
+  return result;
 }
 
-function codingStringRecursive(action, n, svar) {
-  let nyttSvar = !Number.isInteger(svar)
+function stringNotRecognized(action, n, input) {
+  let newInput = !Number.isInteger(input)
   ? prompt(`Þú gafst ekki upp streng. Reyndu aftur. \n Gefðu upp strenginn sem á að ${action} með hliðrun ${n}:`)
   : prompt(`Þú gafst upp stafi sem ekki er hægt að ${action}: ${invalid.join(', ')}. Reyndu aftur. \n Gefðu upp strenginn sem á að ${action} með hliðrun ${n}:`);
-  let result = !Number.isInteger(nyttSvar) | nyttSvar != '' ? true : codingStringRecursive(action, n, nyttSvar);
+  let result = !Number.isInteger(newInput) | newInput != '' ? newInput : stringNotRecognized(action, n, newInput);
   return result;
 }
 
@@ -70,7 +71,7 @@ function codingStringRecursive(action, n, svar) {
 // GUMMI = ÍXÓÓK
 function encode(str, n) {
   n=n%32;
-  console.log(str)
+  // console.log(str)
   let upperCaseStr = str.toLocaleUpperCase();
   let newLetters=LETTERS.split('');
   let newStr1=str.split('');
@@ -148,10 +149,11 @@ function decode(str, n) {
 
 start();
 
+/*
 console.assert(encode('A', 3) === 'D', 'kóðun á A með n=3 er D');
 console.assert(decode('D', 3) === 'A', 'afkóðun á D með n=3 er A');
 console.assert(encode('AÁBDÐEÉFGHIÍJKLMNOÓPRSTUÚVXYÝÞÆÖ', 32) === 'AÁBDÐEÉFGHIÍJKLMNOÓPRSTUÚVXYÝÞÆÖ', 'kóðun með n=32 er byrjunarstrengur');
 console.assert(encode('AÁBDÐEÉFGHIÍJKLMNOÓPRSTUÚVXYÝÞÆÖ', 3) === 'DÐEÉFGHIÍJKLMNOÓPRSTUÚVXYÝÞÆÖAÁB', 'kóðun á stafrófi með n=3');
 console.assert(decode('DÐEÉFGHIÍJKLMNOÓPRSTUÚVXYÝÞÆÖAÁB', 3) === 'AÁBDÐEÉFGHIÍJKLMNOÓPRSTUÚVXYÝÞÆÖ', 'afkóðun á stafrófi með n=3');
-console.assert(decode(encode('HALLÓHEIMUR', 13), 13) === 'HALLÓHEIMUR', 'kóðun og afkóðun eru andhverf');
+console.assert(decode(encode('HALLÓHEIMUR', 13), 13) === 'HALLÓHEIMUR', 'kóðun og afkóðun eru andhverf');*/
 
